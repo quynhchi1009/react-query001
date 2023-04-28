@@ -1,25 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
 
 const Posts = () => {
-    const [posts, setPosts] = useState<any[]>([]);
-
     const fetchApi = async () => {
         const response = await axios.get(
             "https://jsonplaceholder.typicode.com/posts"
         );
         return response.data;
     };
+    
+    const { isError, isLoading, data, isFetching } = useQuery(["posts"], fetchApi, {
+        retry: 5,
+        retryDelay: 1000,
+    });
 
-    const {isError, isLoading, data} = useQuery(["posts"], fetchApi, {retry: 1, retryDelay: 1000});
-
-    useEffect(() => {
-        fetchApi();
-    }, []);
+    console.log("Check if", {isFetching, isLoading});
+    
 
     if (isLoading) {
-        return <h1>...Loading</h1>
+        return <h1>...Loading</h1>;
     }
 
     if (isError) {
@@ -28,8 +27,9 @@ const Posts = () => {
 
     return (
         <div>
+            <h1>React Query</h1>
             {data.map((post: any) => {
-                return <h1 key={post.id}>{post.title}</h1>;
+                return <p key={post.id}>{post.title}</p>;
             })}
         </div>
     );
